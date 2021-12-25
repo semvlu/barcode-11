@@ -1,0 +1,43 @@
+#include<stdio.h>
+typedef struct address_t{
+	int x;
+	int y;
+	int z;
+	int m;
+	char nickname[11];//remember '\0'
+}address;
+address scan_address(address list);
+int local_address(address listi,address listj);//return 1 if same
+int main(){//0.0.0.0 none=end
+	address list[100];
+	int count=0;
+	list[count]=scan_address(list[count]);
+	while(count<100&&list[count].x!=0&&list[count].y!=0&&list[count].z!=0&&list[count].m!=0&&list[count].nickname!="none"){
+		count++;
+		list[count]=scan_address(list[count]);
+	}
+	for(int i=0;i<=count;i++){
+		for(int j=i+1;j<=count;j++){
+			if(local_address(list[i],list[j])==1){
+				printf("Machines %s and %s are on the same local network.\n",list[i].nickname,list[j].nickname);
+			}
+		}
+	}
+}
+address scan_address(address list){
+	char dot;
+	scanf("%d%c%d%c%d%c%d%c%s%c",&list.x,&dot,&list.y,&dot,&list.z,&dot,&list.m,&dot,list.nickname,&dot);
+	return list;
+}
+int local_address(address listi,address listj){
+	int num1=listj.x;
+	int num2=listi.x;
+	int num3=listj.y;
+	int num4=listi.y;
+	if(num1==num2&&num3==num4){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
