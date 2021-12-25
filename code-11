@@ -5,6 +5,11 @@
 #include<math.h>
 int deviation(int a[],int b[],int m);
 int direction(int a[],int m);
+int checkspace(int a[],int m);
+int decode(int a[],int d[],int m,int n);
+int checkC(int d[],int n);
+int checkK(int d[],int n);
+void ansoutput(int d[],int n,int time);
 int main(){
 	int m;
 	int time=1;
@@ -51,9 +56,30 @@ int main(){
 							printf("Case %d: bad code\n",time);
 							break;
 						case 1:
-							if(checkspace()!=-1){		//whether every space are 0
-								int d[n+2];
-								decode(a,d,);		//no start and stop characters inside
+							if(checkspace(a,m)!=-1){		//whether every space are 0
+								int d[n+2]={0};
+								int result=decode(a,d,m,n);		//decode characters without start and stop
+								if(result==-1){
+									printf("Case %d: bad code\n",time);
+									break;
+								}
+								else{
+									int c=checkC(d,n);
+									if(c==-1){
+										printf("Case %d: bad C\n",time);
+										break;
+									}
+									else{
+										int k=checkK(d,n);
+										if(k==-1){
+											printf("Case %d: bad K\n",time);
+											break;
+										}
+										else{
+											ansoutput(d,n,time);
+										}
+									}
+								}
 							}
 							else{
 								printf("Case %d: bad code\n",time);
@@ -102,7 +128,7 @@ int deviation(int a[],int b[],int m){		//not sure?		//return 1 if ok   -1 if bad
 		return -1;		//bad code
 	}
 	else{
-		for(int 0;i<m;i++){
+		for(int i=0;i<m;i++){
 			if(a[i]<mid){
 				a[i]=0;
 			}
@@ -141,4 +167,132 @@ int direction(int a[],int m){		//return 1 if ok   0 if bad code
 	else{
 		return 0;
 	}
+}
+int checkspace(int a[],int m){		//return 0 if ok    -1 if bad code
+	int i=5;
+	while(i<=m-6){
+		if(a[i]!=0){
+			return -1;
+			break;		//can while use break?
+		}
+		else{
+			i=i+6;
+		}
+	}
+	return 0;
+}
+int decode(int a[],int d[],int m,int n,int time){		//convert to decimal then to characters,no start stop	//return -1 if bad code
+	int i=6;
+	int j=0;
+	for(int i=6;i<m-10;i=i+6){
+		if(a[i+4]==1){
+			d[j]=1;
+		}
+		if(a[i+3]==1){
+			d[j]=d[j]+2;
+		}
+		if(a[i+2]==1){
+			d[j]=d[j]+4;
+		}
+		if(a[i+1]==1){
+			d[j]=d[j]+8;
+		}
+		if(a[i]==1){
+			d[j]=d[j]+16;
+		}
+		j++;
+	}
+	for(int j=0;j<n+2;j++){
+		switch(d[j]){		//can switch use d[]?
+			case 16:
+				d[j]=0;
+				break;
+			case 18:
+				d[j]=1;
+				break;
+			case 3:
+				d[j]=2;
+				break;
+			case 20:
+				d[j]=3;
+				break;
+			case 12:
+				d[j]=4;
+				break;
+			case 24:
+				d[j]=5;
+				break;
+			case 5:
+				d[j]=6;
+				break;
+			case 9:
+				d[j]=7;
+				break;
+			case 17:
+				d[j]=8;
+				break;
+			case 1:
+				d[j]=9;
+				break;
+			case 4:
+				d[j]=-1;		//-1 means "-"
+				break;
+			default:
+				return -1;
+				break;
+		}
+	}
+	return 0;
+}
+int checkC(int d[],int n){
+	int chk=d[n];		//value that c support to be
+	int sum=0;		//value to be %11
+	int w;		//weight
+	for(int i=0;i<n;i++){
+		if(d[i]!=-1){
+			w=d[i];
+		}
+		else{
+			w=10;
+		}
+		sum=sum+((n-i-1)%10+1)*w;
+	}
+	if(sum%11==chk){
+		return 0;
+	}
+	else{
+		return -1;		//bad C
+	}
+}
+int checkK(int d[],int n){
+	int chk=d[n+1];		//value that k support to be
+	int sum=0;		//value to be %11
+	int w;		//weight
+	for(int i=0;i<n+1;i++){
+		if(d[i]!=-1){
+			w=d[i];
+		}
+		else{
+			w=10;
+		}
+		sum=sum+((n-i)%9+1)*w;
+	}
+	if(sum%11==chk){
+		return 0;
+	}
+	else{
+		return -1;		//bad K
+	}
+}
+void ansoutput(int d[],int n,int time){
+	printf("Case %d: ",time);
+	for(int i=0;i<n;i++){
+		if(d[i]==-1){
+			printf("%c","-");
+		}
+		else{
+			printf("%d",d[i]);
+		}
+	}
+	puts("");
 }
