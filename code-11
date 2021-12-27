@@ -13,7 +13,7 @@ void ansoutput(int d[],int n,int time);
 int main(){
 	int m;
 	int time=1;
-	FILE *ptr;
+	FILE *ptr=NULL;
 	if((ptr=fopen("testcase.txt","r"))==NULL){
 		puts("Couldn't open the file");
 	}
@@ -28,66 +28,65 @@ int main(){
 			}
 			else{
 				int n=(m-23)/6;
-				int a[n+4];		//the value inside will change from input to binary
-				int b[n+4];		//used to check width
+				int a[m]={0};		//the value inside will change from input to binary
+				int b[m]={0};		//used to check width
 				for(int i=0;i<m;i++){		//input the values 
-					fscanf(ptr,"%d",&a[i]);		//what if there's a decimal in file?
-					if(a[i]<1&&a[i]>200){
+					fscanf(ptr,"%d",&a[i]);		//what if there's a decimal in file
+					if(a[i]<1||a[i]>200){
 						printf("Case %d: bad code\n",time);
-						fscanf(ptr,"%d",&m);
-						time++;
-						break;		//is it just break out of for?
+						break;		//is it just break out of for
 					}
 					else{
 						b[i]=a[i];
 					}
 				}
-				int convert=deviation(a,b,m);		//deviation processing + convert to 0、1 
-				if(convert==-1){
-					printf("Case %d: bad code\n",time);
-					fscanf(ptr,"%d",&m);
-					time++;
-					continue;
-				}
-				else{		//now value in a[] are 0 and 1
-					int dir=direction(a,m);		//check direction + reverse
-					switch(dir){
-						case 0:		//bad code
-							printf("Case %d: bad code\n",time);
-							break;
-						case 1:
-							if(checkspace(a,m)!=-1){		//whether every space are 0
-								int d[n+2]={0};
-								int result=decode(a,d,m,n);		//decode characters without start and stop
-								if(result==-1){
-									printf("Case %d: bad code\n",time);
-									break;
-								}
-								else{
-									int c=checkC(d,n);
-									if(c==-1){
-										printf("Case %d: bad C\n",time);
-										break;
+				if(b[m-1]!=0){
+					int convert=deviation(a,b,m);		//deviation processing + convert to 0、1 
+					if(convert==-1){
+						printf("Case %d: bad code\n",time);
+						//continue;
+					}
+					else{		//now value in a[] are 0 and 1
+						int dir=direction(a,m);		//check direction + reverse
+						switch(dir){
+							case 0:		//bad code
+								printf("Case %d: bad code\n",time);
+								break;
+							case 1:
+								if(checkspace(a,m)!=-1){		//whether every space are 0
+									int d[n+2];		//int d[n+2]={0};
+									memset(d,0,(n+2)*sizeof(int));
+									int result=decode(a,d,m,n);		//decode characters without start and stop
+									if(result==-1){
+										printf("Case %d: bad code\n",time);
+										//break;
 									}
 									else{
-										int k=checkK(d,n);
-										if(k==-1){
-											printf("Case %d: bad K\n",time);
-											break;
+										int c=checkC(d,n);
+										if(c==-1){
+											printf("Case %d: bad C\n",time);
+											//break;
 										}
 										else{
-											ansoutput(d,n,time);
+											int k=checkK(d,n);
+											if(k==-1){
+												printf("Case %d: bad K\n",time);
+												//break;
+											}
+											else{
+												ansoutput(d,n,time);
+											}
 										}
 									}
 								}
-							}
-							else{
+								else{
+									printf("Case %d: bad code\n",time);
+								}
+								break;
+							default:
 								printf("Case %d: bad code\n",time);
-							}
-							break;
-						default:
-							printf("Case %d: bad code\n",time);
-							break;
+								break;
+						}
 					}
 				}
 			}
@@ -173,7 +172,6 @@ int checkspace(int a[],int m){		//return 0 if ok    -1 if bad code
 	while(i<=m-6){
 		if(a[i]!=0){
 			return -1;
-			break;		//can while use break?
 		}
 		else{
 			i=i+6;
@@ -181,7 +179,7 @@ int checkspace(int a[],int m){		//return 0 if ok    -1 if bad code
 	}
 	return 0;
 }
-int decode(int a[],int d[],int m,int n,int time){		//convert to decimal then to characters,no start stop	//return -1 if bad code
+int decode(int a[],int d[],int m,int n){		//convert to decimal then to characters,no start stop	//return -1 if bad code
 	int i=6;
 	int j=0;
 	for(int i=6;i<m-10;i=i+6){
@@ -288,7 +286,7 @@ void ansoutput(int d[],int n,int time){
 	printf("Case %d: ",time);
 	for(int i=0;i<n;i++){
 		if(d[i]==-1){
-			printf("%c","-");
+			printf("%c",'-');
 		}
 		else{
 			printf("%d",d[i]);
