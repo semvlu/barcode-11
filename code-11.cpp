@@ -95,44 +95,17 @@ int main(){
 	fclose(ptr);
 } 
 int deviation(int a[],int b[],int m){		//not sure?		//return 1 if ok   -1 if bad code
-	int nrwmin=a[0],widmin=0,widmax=0;
-	double mid=0;		
+	int nrwstd = a[0], widstd = 2 * a[0];
 	for(int i=0;i<m;i++){
-		if(a[i]<nrwmin){
-			nrwmin=a[i];
-		}
-		if(a[i]>widmax){
-			widmax=a[i];
-		}
-	}
-	mid=(nrwmin+widmax)/2.0;
-	printf("%f%d%d",mid,nrwmin,widmax);
-	for(int i=0;i<m;i++){
-		if(b[i]<mid){
-			b[i]=b[i]*2;
-		}
-		if(b[i]>widmin){
-			if(b[i]>widmax){
-				widmax=b[i];
-			}
-			else{
-				widmin=b[i];
-			}
-		}
-	}
-	if(widmax*0.95>widmin*1.05){
-		return -1;		//bad code
-	}
-	else{
-		for(int i=0;i<m;i++){
-			if(a[i]<widmin){
-				a[i]=0;
-			}
-			else{
-				a[i]=1;
-			}
-		}
-		return 1;
+		if(i == m-1 && a[i]<=1.05*nrwstd && a[i]>=0.95*nrwstd) // the last bar must be nrw 
+			a[i]=0;
+			return 1;
+		else if(a[i]<=1.05*nrwstd && a[i]>=0.95*nrwstd) //nrw bar
+			a[i]=0;
+		else if(a[i]<=1.05*widstd && a[i]>=0.95*widstd) // wid bar
+			a[i]=1;
+		else
+			return -1;
 	}
 }
 int direction(int a[],int m){		//return 1 if ok   0 if bad code
